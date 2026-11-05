@@ -1,7 +1,7 @@
 services:
   postgres:
-    image: pgvector/pgvector:pg16      # PostgreSQL 16 plus the pgvector extension (used in Lab 8)
-    command: ["postgres", "-c", "wal_level=logical"]   # switches on change data capture (Lab 3)
+    image: pgvector/pgvector:pg16 # PostgreSQL 16 plus the pgvector extension (used in Lab 8)
+    command: ["postgres", "-c", "wal_level=logical"] # switches on change data capture (Step 6)
     container_name: kedai-postgres
     environment:
       POSTGRES_USER: ${PG_USER}
@@ -11,11 +11,21 @@ services:
       - "5432:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
- 
   adminer:
     image: adminer
     ports:
       - "8081:8080"
- 
+  objectstore:
+    image: cgr.dev/chainguard/minio
+    command: server /data
+    environment:
+      MINIO_ROOT_USER: ${S3_ACCESS_KEY}
+      MINIO_ROOT_PASSWORD: ${S3_SECRET_KEY}
+    ports:
+      - "19000:9000"
+    volumes:
+      - s3data:/data
+
 volumes:
   pgdata:
+  s3data:
